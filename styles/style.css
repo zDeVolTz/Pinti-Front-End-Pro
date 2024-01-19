@@ -1,0 +1,57 @@
+body {
+    margin: 0;
+}
+
+.users__message-block > p {
+    margin: 0;
+    font-size: 18px;
+}
+
+.users__message-block > h3 {
+    font-size: 26px;
+}
+
+.users__messages {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 80%;
+    padding: 0;
+}
+.users__message {
+    opacity: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: rgb(158, 163, 158);
+    list-style: none;
+    padding-right: 20px;
+
+}
+
+.users__message.show {
+    opacity: 1;
+    transition: all 2s ease;
+}
+
+.users__testimonials {
+    display: flex;
+    justify-content: center;
+}
+
+.users__avatar {
+    align-self: center;
+    display: block;
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.users__image {
+    width: 20vw;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 20px;
+}
