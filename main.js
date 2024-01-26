@@ -1,43 +1,20 @@
-const catButton = document.querySelector('.cat-button');
-const catButtonBlock = document.querySelector('.button-block');
-let isAnimating = false;
-catButton.addEventListener('click',() => {
-    if (!isAnimating) {
-        isAnimating = true;
+const smileImg = document.querySelectorAll('.smile-gif');
+const smileBlock = document.querySelector('.smile-gif-container');
 
-        setTimeout(() => {
-            catButton.classList.add('hidden');
-            setRandomImage(randomIntFromInterval(1, 9));
-        }, 600);
+(function() {
+    smileImg.forEach((element) => {
+        const divCount = document.createElement('div');
+        divCount.className = "count-block";
+        divCount.innerHTML = `<p class="count">0</p>`;
+        divCount.insertBefore(element, divCount.firstChild);
+        smileBlock.append(divCount);
+    });
+}());
 
-        const catPicture = document.getElementsByClassName('cat-image')[0];
-
-        setTimeout(() => {
-            catButton.classList.remove('hidden');
-            isAnimating = false;
-        }, 1400);
-
-        catPicture.setAttribute("src", './images/cat.gif');
-    }
-});
-
-function setRandomImage(rndInt){
-    const getContainer = document.querySelector(".cat-section");
-    let catImgContainer = document.querySelector('.picture-cat--contaier');
-    if(!catImgContainer){
-        let pictureBlock = document.createElement("div");
-        pictureBlock.className = "picture-cat--contaier";
-        pictureBlock.innerHTML = `<img src='./images/${rndInt}.jpg' class ='picture-cat'>`;
-        getContainer.append(pictureBlock);
-    }
-    if(catImgContainer){
-     catImgContainer.innerHTML = `<img src='./images/${rndInt}.jpg' class ='picture-cat'>`;
-    }
-   
-}
-
-function randomIntFromInterval(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-}
+smileImg.forEach((element) => (element.addEventListener('click', () => {
+   const count = element.nextElementSibling;
+   let value = +count.innerHTML;
+   count.innerHTML = `${value + 1}`;
+})));
 
 
