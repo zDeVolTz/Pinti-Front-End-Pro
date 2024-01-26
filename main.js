@@ -1,23 +1,43 @@
-const tdValue = 10;
-const trValue = 10;
+const catButton = document.querySelector('.cat-button');
+const catButtonBlock = document.querySelector('.button-block');
+let isAnimating = false;
+catButton.addEventListener('click',() => {
+    if (!isAnimating) {
+        isAnimating = true;
 
-function createdTable(trValue, tdValue) {
-    const customTable = document.querySelector('.table_custom');
-    let valueTable = document.createElement("table");
-    let tbody = document.createElement("tbody");
-    let count = 1;
-    for (let i = 1; i <= trValue; i++) {
-        let row = document.createElement('tr');
-            for (let j = 1; j <= tdValue; j++){
-                row.innerHTML += `<td>${count}</td>`;
-                count++;
-            }
-        tbody.append(row);
+        setTimeout(() => {
+            catButton.classList.add('hidden');
+            setRandomImage(randomIntFromInterval(1, 9));
+        }, 600);
+
+        const catPicture = document.getElementsByClassName('cat-image')[0];
+
+        setTimeout(() => {
+            catButton.classList.remove('hidden');
+            isAnimating = false;
+        }, 1400);
+
+        catPicture.setAttribute("src", './images/cat.gif');
     }
-    valueTable.append(tbody);
-    customTable.append(valueTable);
+});
+
+function setRandomImage(rndInt){
+    const getContainer = document.querySelector(".cat-section");
+    let catImgContainer = document.querySelector('.picture-cat--contaier');
+    if(!catImgContainer){
+        let pictureBlock = document.createElement("div");
+        pictureBlock.className = "picture-cat--contaier";
+        pictureBlock.innerHTML = `<img src='./images/${rndInt}.jpg' class ='picture-cat'>`;
+        getContainer.append(pictureBlock);
+    }
+    if(catImgContainer){
+     catImgContainer.innerHTML = `<img src='./images/${rndInt}.jpg' class ='picture-cat'>`;
+    }
+   
 }
 
-createdTable(tdValue, trValue);
+function randomIntFromInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
 
 
