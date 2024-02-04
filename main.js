@@ -29,7 +29,7 @@ function getCityForIpUser(){
             const ipAddress = data.ip;
     
             const getPositionIPUser = new Promise((resolve, reject) => {
-                fetch(`http://ipwho.is/${ipAddress}`)
+                fetch(`https://ipwho.is/${ipAddress}`)
                     .then(response => {
                         if (!response.ok) {
                             reject(new Error('Cервер ушел за печенькой'));
