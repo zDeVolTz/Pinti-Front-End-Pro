@@ -80,7 +80,8 @@ function getUserWeather(userCity){
             "windSpeed" : data.wind.speed,
             "windDeg" : getWindDirectionUkrainian(data.wind.deg), 
             "nameCity" : data.name,
-            "timeCurrent" : getCurrentTime(data.dt)
+            "timeCurrent" : getCurrentTime(data.dt),
+            "pressure" : data.main.pressure
         }
         return dataMap;
     });
@@ -105,6 +106,7 @@ function renderWeatherWidget(data){
                 <p>Швидкість вітру: ${data.windSpeed} м/с</p>
                 <p>Напрям: ${data.windDeg}</p>
                 <p>Вологість: ${data.humidity}%</p>
+                <p>Тиск: ${data.pressure} мм рт.ст.</p>
             </div>
         </div>
         <div class="time-temp">
