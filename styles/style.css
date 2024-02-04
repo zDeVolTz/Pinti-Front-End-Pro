@@ -1,58 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Kelly+Slab&display=swap');
+
+
 body {
   margin: 0;
   padding: 40px;
   background: lightgray;
 }
 
-section {
-display: flex;
-justify-content: flex-start;
-flex-direction: column;
+.weather-widget {
+  width: 50%;
+  height: auto;
+  background-color: rgb(25, 116, 169);
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  overflow: hidden;
+  position: relative;
 }
-
-.user-post {
-  margin-top: 30px;
+.title-weather-block__wind{
+  flex: 1;
   display: block;
-  background-color: rgba(53, 53, 170, 0.676);
+  min-width: 280px;
+  background-color: rgb(30, 128, 185);
+  border-radius: 0px 10px 10px 0px;
+  padding-left: 10px;
+  padding-right: 10px; 
 }
 
-.user-post--comments {
+.title-weather-block__wind p{
+  margin-bottom: 20px;
+}
+
+.title-weather-block {
+  position: relative;
+  left: -100%;
+  display: flex;
+  width: 75%;
+  flex-direction: row;
+  background-color: rgb(30, 128, 185);
+  border-radius: 0px 10px 10px 0px;
+  animation: slideIn 1s ease-in-out forwards;
+   
+}
+
+@keyframes slideIn {
+  to {
+    left: 0;
+  }
+}
+
+
+.title-weather-block__temp {
+  position: relative;
+  left: -100%;
+  display: flex;
+  width: 45%;
+  flex-direction: column;
+  border-radius: 0px 10px 10px 0px;
+  background-color: rgb(34, 144, 209);
+  animation: slideIn 1.5s ease-in-out forwards;
+  padding-left: 10px;
+  padding-right: 10px; 
+}
+
+.title-weather-block__temp h2 {
+  margin-bottom: 0;
+  font-weight: 800;
+  font-size: 24px;
+  font-family: 'Kelly Slab', sans-serif;
+  letter-spacing: 1px;
+}
+.title-weather-block__temp h2 span {
+  color: aqua;
+}
+.temp-block {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+}
+.temp-block p:first-child{
+  margin-bottom: 20px;
+}
+
+p {
+  margin: 0;
+  font-weight: 600;
+  font-size: 18px;
+  font-family: 'Kelly Slab', sans-serif;
+  letter-spacing: 1px;
+}
+
+h3 {
+  font-family: 'Kelly Slab', sans-serif;
+  margin: 0;
+}
+.time-temp {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.time-temp p {
+  color: aliceblue;
+}
+
+.title-weather-block__wind--img {
+  display: block;
+  position: relative;
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  animation: moveImage 4s linear infinite alternate;
+}
+
+@keyframes moveImage {
+  0% {
+    left: 0;
+  }
+  100% {
+    left: calc(100% - 70px);
+  }
+}
+
+.title-weather-block__wind--img-block {
+  display: block;
   width: 100%;
+  position: relative;
 }
-.users-posts input {
+
+.title-weather-block__wind--img-title {
+  margin-top: 0;
   text-align: center;
-}
-
-.users-posts input:invalid{
-  border-color: red;
-  background-color: rgba(255, 42, 0, 0.641);
-}
-.post-content {
-  background: white;
-  font-size: 30px;
-}
-
-.post-title h3 {
-  font-size: 50px;
-  margin: 0;
-}
-
-.users-comments {
-  padding-left: 30px;
-}
-
-.users-comment {
-  margin-top: 30px;
-  display: block;
-  background-color: rgba(75, 179, 87, 0.676);
-}
-
-.comment-title {
-  margin: 0;
-  font-size: 30px;
-}
-.comments-content {
-  margin-top: 20px;
-  background-color: white;
-  font-size: 30px;
 }
