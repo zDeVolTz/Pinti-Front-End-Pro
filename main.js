@@ -27,9 +27,9 @@ function getCityForIpUser(){
         .then(response => response.json())
         .then(data => {
             const ipAddress = data.ip;
-    
+            console.log(ipAddress);
             const getPositionIPUser = new Promise((resolve, reject) => {
-                fetch(`https://ipwho.is/${ipAddress}`)
+                fetch(`https://api.ipgeolocation.io/ipgeo?apiKey=0bb14088f49849829cc8d612c181fc21&ip=${ipAddress}`)
                     .then(response => {
                         if (!response.ok) {
                             reject(new Error('Cервер ушел за печенькой'));
@@ -42,6 +42,8 @@ function getCityForIpUser(){
                     });
             });
     
+
+
             return getPositionIPUser;
         })
         .then(response => response.json())
