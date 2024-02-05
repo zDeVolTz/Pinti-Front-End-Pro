@@ -8,3 +8,8 @@ export const WIND_DIRECTIONS_UA = [
     "Захід",
     "Північний захід"
 ];
+
+
+export const CORRECT_CITY_ERROR = {
+    "Bilyaivka" : "Bilyayivka" 
+}

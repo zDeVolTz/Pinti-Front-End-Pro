@@ -21,6 +21,7 @@ body {
   overflow: hidden;
   position: relative;
 }
+
 .title-weather-block__wind{
   flex: 1;
   display: block;

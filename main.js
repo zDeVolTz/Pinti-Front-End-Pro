@@ -1,9 +1,11 @@
 
 import { WIND_DIRECTIONS_UA } from './common.js';
+import { CORRECT_CITY_ERROR } from './common.js';
 
 getCityForIpUser().then(
     userCity => {
-    const city = String(userCity).toUpperCase();
+    let city = CheckCorrectCity(CORRECT_CITY_ERROR,userCity.toString());
+    city = city.toUpperCase();
     getUserWeather(city).then(dataMap => renderWeatherWidget(dataMap));
     }
 )
@@ -27,9 +29,8 @@ function getCityForIpUser(){
         .then(response => response.json())
         .then(data => {
             const ipAddress = data.ip;
-            console.log(ipAddress);
             const getPositionIPUser = new Promise((resolve, reject) => {
-                fetch(`https://api.ipgeolocation.io/ipgeo?apiKey=0bb14088f49849829cc8d612c181fc21&ip=${ipAddress}`)
+                fetch(`https://ipinfo.io/${ipAddress}?token=eac819bb99f071`)
                     .then(response => {
                         if (!response.ok) {
                             reject(new Error('Cервер ушел за печенькой'));
@@ -41,8 +42,6 @@ function getCityForIpUser(){
                         alert('Не удалось получить город');
                     });
             });
-    
-
 
             return getPositionIPUser;
         })
@@ -126,6 +125,14 @@ function getCurrentTime(time){
         time: `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`
     };
     return formattedTime;
+}
+
+function CheckCorrectCity(CORRECT_CITY_ERROR,userCity){
+    if (CORRECT_CITY_ERROR.hasOwnProperty(userCity)){
+        return CORRECT_CITY_ERROR[userCity];
+    } else {
+        return userCity
+    }
 }
 
 function getWindDirectionUkrainian(degrees) {
