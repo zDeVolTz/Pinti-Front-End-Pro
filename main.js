@@ -30,7 +30,7 @@ function getCityForIpUser(){
         .then(data => {
             const ipAddress = data.ip;
             const getPositionIPUser = new Promise((resolve, reject) => {
-                fetch(`https://ipinfo.io/${ipAddress}?token=eac819bb99f071`)
+                fetch(`https://ipapi.co/${ipAddress}/json`)
                     .then(response => {
                         if (!response.ok) {
                             reject(new Error('Cервер ушел за печенькой'));
