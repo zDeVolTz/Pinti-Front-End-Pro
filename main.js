@@ -157,27 +157,49 @@ const products = [
     },
 ]
 
-const categoryProduct = document.getElementsByTagName('ul')[0];
+const categoryProduct = document.getElementById('category-lists');
 const productsLists = document.querySelector(".product-list");
 const productsTitle = document.querySelector(".product-title");
+const productsBasket = document.querySelector(".products-basket-block");
+const productsBasketPop = document.querySelector(".products-basket-popup");
+const overlayPop = document.querySelector(".overlay");
+
 categoryProduct.addEventListener('click', function(event) {
     let target = event.target;
     if (target.tagName === "LI"){
         event.stopPropagation();
-        getProductList(target.textContent)
+        getProductList(target);
+    }
+},true);
+
+productsBasket.addEventListener('click',function(event){
+    let target = event.target;
+    if (target.classList.contains("products-basket-btn")){
+        event.stopPropagation();
+        renderProductsBusket();
+    } else if (target.classList.contains("product-bsk-delete")){
+        event.stopPropagation();
+        deleteFromBusket(target);
+    } else if (target.classList.contains("product-bsk--close-pop")){
+        event.stopPropagation();
+        productsBasketPop.classList.add('hidden');
+        overlayPop.classList.add('hidden');
+    } else if (target.classList.contains("product-bsk--block") || target.closest('.product-bsk--block')){
+        event.stopPropagation();
+        target = target.closest('.product-bsk--block');
+        productsBasketPop.classList.add('hidden');
+        overlayPop.classList.add('hidden');
+        let productEntry  = JSON.parse(localStorage.getItem(target.id));
+        const product = products.find(item => item.id === productEntry.id);
+        getProductCard(product);
     }
 },true);
 
 function getProductList(category){
     let filterCategory;
     const productCards = document.querySelectorAll(".product-cards");
-    if(category === 'Смартфоны'){
-        filterCategory = products.filter(product => product.category === 'mobile');
-    } else if(category === 'Ноутбуки'){
-        filterCategory = products.filter(product => product.category === 'laptop');
-    } else if (category === 'Мониторы') {
-        filterCategory = products.filter(product => product.category === 'monitor');
-    }
+    let dataNameValue = category.getAttribute('data-name');
+    filterCategory = products.filter(product => product.category === dataNameValue);
 
     if(productCards){
         productCards.forEach(element => {
@@ -221,6 +243,7 @@ function getProductCard(card) {
         let target = event.target;
         if (target.className === "buy-button"){
             event.stopPropagation();
+            setProductInStorage(card);
             let buyMessege = document.querySelector(".buy-product-messeage");
             buyMessege.classList.add("visible");
             setTimeout(() => {
@@ -234,3 +257,59 @@ function getProductCard(card) {
     },true);
 }
 
+function setProductInStorage(product){
+    const currentTime = new Date().getTime();
+    const productInfo = {
+        id: product.id,
+        price: product.price,
+        time: currentTime
+    };
+    localStorage.setItem(`productInfo_${currentTime}`, JSON.stringify(productInfo));
+}
+
+
+function renderProductsBusket() {
+    const productEntries = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('productInfo_')) {
+            const productInfo = JSON.parse(localStorage.getItem(key));
+            
+            productEntries.push({key,productInfo});
+        }
+    }
+    productEntries.sort((a, b) => {
+        return parseInt(a.productInfo.time) - parseInt(b.productInfo.time);
+    });
+    productsBasketPop.innerHTML = `<button type="button" class="product-bsk--close-pop">Закрыть</button>`;
+    productEntries.forEach(element => {
+        const formattedDateTime = getFormatedTime(element.productInfo.time);
+        const product = products.find(item => item.id === element.productInfo.id);
+        productsBasketPop.innerHTML += `
+                <div class="product-bsk--block" id="${element.key}">
+                    <button type="button" class="product-bsk-delete">Удалить</button>
+                    <div class="product-bsk--block-info">
+                        <h3 class="product-title-bsk">${product.name}</h3>
+                        <p class="product-price-bsk">Цена: ${element.productInfo.price} Грн.</p>
+                        <p class="product-time-bsk">Время покупки: ${formattedDateTime}</p>
+                    </div>
+                </div>
+            `;
+    })
+    productsBasketPop.classList.remove('hidden');
+    overlayPop.classList.remove('hidden');
+}
+
+function getFormatedTime(time){
+    const date = new Date(time);
+    const formattedTime = `
+    ${String(date.getDate()).padStart(2,'0')}.${String(date.getMonth() + 1).padStart(2,'0')}.${date.getFullYear()} 
+    ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`
+    return formattedTime;
+}
+
+function deleteFromBusket(target) {
+    const deleteBlock = target.parentNode;
+    localStorage.removeItem(deleteBlock.id);
+    productsBasketPop.removeChild(deleteBlock);
+}

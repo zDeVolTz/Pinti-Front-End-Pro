@@ -8,17 +8,24 @@
 </head>
 <body>
   <section>
-    <aside>
-      <nav>
-        <ul>
-          <li>Смартфоны</li>
-          <li>Ноутбуки</li>
-          <li>Мониторы</li>
-        </ul>
-      </nav>
-    </aside>
-    <div class="product-list"></div>
-    <div class="product-title"></div>
+    <div class="products-basket-block">
+      <button type="button" class="products-basket-btn">Моя корзина</button>
+      <div class="products-basket-popup hidden"></div>
+      <div class="overlay hidden"></div>
+    </div>
+    <div class="products">
+      <aside>
+        <nav>
+          <ul id="category-lists">
+            <li data-name="mobile">Смартфоны</li>
+            <li data-name="laptop">Ноутбуки</li>
+            <li data-name="monitor">Мониторы</li>
+          </ul>
+        </nav>
+      </aside>
+      <div class="product-list"></div>
+      <div class="product-title"></div>
+    </div>
   </section>
   <script src="main.js"></script>
 </body>
