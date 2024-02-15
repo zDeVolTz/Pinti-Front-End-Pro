@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Кошка и кнопка</title>
+  <title>Інтернет магазин</title>
   <link rel="stylesheet" href="./styles/style.css">
 </head>
 <body>
@@ -27,6 +27,44 @@
       <div class="product-title"></div>
     </div>
   </section>
+  <div id="" class="buy-form-popup--block">
+    <div class="buy-form-popup hidden">
+        <button type="button" class="form-buy--close-pop">Закрыть</button>
+        <form id="formBuyProduct" class="form-block">
+            <fieldset class="form-block-content">
+                <legend class="form-title">Форма для отправки</legend>
+                <label for="nameInput" class="form--mr-top">Ваше полное официальное имя (введите то что указано в документах)</label>
+                <input type="text" class="form-buy-input" id="nameInput" placeholder="Введите ваше полное имя" required>
+                <fieldset class="form-block-delivery form--mr-top">
+                    <legend>Оператор доставки Новая Почта</legend>
+                    <label for="cityInput" class="form--mr-top">Название города : <span>выберите из выпадающего списка</span></label>
+                    <div class="input-post">
+                        <input type="text" class="form-buy-input" id="cityInput" placeholder="Введие первые буквы города" data-city-id="" required>
+                        <div class="address-form-block"><ul id="addressList" class="address-form-list hidden"></ul></div>
+                    </div>
+                    <label for="addressPostInput"  class ="form--mr-top">Почтомат или отделение : <span>выберите из выпадающего списка</span></label>
+                    <div class="input-post">
+                        <input type="text" id="addressPostInput" class="form-buy-input" placeholder="Введите номер отделения или почтомата" data-delivery-post-id ="" disabled required>
+                        <div class="address-form-block"><ul id="addressPostList" class="address-form-list hidden"></ul></div>
+                    </div>
+                </fieldset>
+                <span class="form--mr-top">Выберите способ оплаты</span>
+                <div id="paid">
+                    <input type="radio" class="form-buy-input" id="postPaid" name="paymentType" required><label class="label-paid-form" for="postPaid">Оплата в отделнии</label>
+                    <input type="radio"  class="form-buy-input" id="onlinePaid" name="paymentType" required><label class="label-paid-form" for="onlinePaid">Оплата карточкой</label>
+                </div>
+                <label for="prodQuantity" class="form--mr-top">Количество товара к покупке</label>
+                <input type="number" class="form-buy-input" id="prodQuantity" required>
+                <label for="comments" class="form--mr-top">Оставьте обязательный комментарий</label>
+                <textarea id="comments" class="form-buy-input" required></textarea>
+                <div class="form--mr-top">
+                    <button id="sendBtnBuyForm" class="send-btn-form">Отправить</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="byu-form-overlay hidden"></div>
+  </div>
   <script src="main.js"></script>
 </body>
 </html>

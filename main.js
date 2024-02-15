@@ -158,35 +158,105 @@ document.addEventListener('DOMContentLoaded', function() {
         },
     ]
     
+    const validitionForm = {
+        nameInput : {
+            title: "ФИО",
+            valid : false,
+            description : "",
+            invalidMessage  : "Неправильно ведено Полное имя: укажите ФИО через пробел"
+        },
+        cityInput : {
+            title: "Адресс",
+            valid : false,
+            description : "",
+            cityId : "",
+            invalidMessage  : "Неправильно указан город: выберите город из списка"
+        },
+        addressPostInput : {
+            title: "Отделение",
+            valid : false,
+            description : "",
+            deliveryPostId : "",
+            invalidMessage : "Неправильно указан адресс: выберите отделение из списка"
+        },
+        paid : {
+            title : "Ваш способ оплаты",
+            valid : false,
+            name : "paymentType",
+            description: "",
+            invalidMessage  : "Не выбран способ оплаты"
+        },
+        prodQuantityInput : {
+            title : "Количество товара",
+            valid : false,
+            description : "",
+            invalidMessage  : "Неверно указано количество укажите цело положительное число"
+        },
+        commentsTextarea : {
+            title : "Комментарий",
+            valid : false,
+            description : "",
+            invalidMessage  : "Неверно указан комментарий"
+        }
+    }
+
     const categoryProduct = document.getElementById('category-lists');
     const productsLists = document.querySelector(".product-list");
     const productsTitle = document.querySelector(".product-title");
     const productsBasket = document.querySelector(".products-basket-block");
     const productsBasketPop = document.querySelector(".products-basket-popup");
     const overlayPop = document.querySelector(".overlay");
-    
+
+    // Новый код
+    const API = "9f543c3fa0e4f5382f0e14d717d6fa58";
+    const url = "https://api.novaposhta.ua/v2.0/json/";
+    const popUpBlock = document.querySelector('.buy-form-popup--block')
+    const popUpBuyBlock = document.querySelector('.buy-form-popup');
+    const popUpBuyOverlay = document.querySelector('.byu-form-overlay');
+    const addressList = document.getElementById('addressList');
+    const deliveryAdressList = document.getElementById('addressPostList');
+    const addressFormList = document.querySelectorAll('.address-form-list');
+    const formBuyProduct = document.getElementById('formBuyProduct');
+    const postPaidRadio = document.getElementById('postPaid');
+    const onlinePaidRadio = document.getElementById('onlinePaid');
+    const labelAllPaidForm = document.querySelectorAll('.label-paid-form');
+    const btnCloseFormBuy =  document.querySelector('.form-buy--close-pop');
+    const inputElements = {
+        nameInput: document.getElementById('nameInput'),
+        cityInput: document.getElementById('cityInput'),
+        addressPostInput: document.getElementById('addressPostInput'),
+        paid : document.getElementById('paid'),
+        prodQuantityInput : document.getElementById('prodQuantity'),
+        commentsTextarea : document.getElementById('comments')
+    };
+    let loading = false;
+
+
     categoryProduct.addEventListener('click', function(event) {
         let target = event.target;
         if (target.tagName === "LI"){
             event.stopPropagation();
+            if(productsTitle.querySelector('.order-form-block')){
+            cleanerOrderBlock();
+            }
             getProductList(target);
         }
     },true);
     
     productsBasket.addEventListener('click',function(event){
         let target = event.target;
+        event.stopPropagation();
         if (target.classList.contains("products-basket-btn")){
-            event.stopPropagation();
+            if(productsTitle.querySelector('.order-form-block')){
+                cleanerOrderBlock();
+            }
             renderProductsBusket();
         } else if (target.classList.contains("product-bsk-delete")){
-            event.stopPropagation();
             deleteFromBusket(target);
         } else if (target.classList.contains("product-bsk--close-pop")){
-            event.stopPropagation();
             productsBasketPop.classList.add('hidden');
             overlayPop.classList.add('hidden');
         } else if (target.classList.contains("product-bsk--block") || target.closest('.product-bsk--block')){
-            event.stopPropagation();
             target = target.closest('.product-bsk--block');
             productsBasketPop.classList.add('hidden');
             overlayPop.classList.add('hidden');
@@ -194,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const product = products.find(item => item.id === productEntry.id);
             getProductCard(product);
         }
-    },true);
+    });
     
     function getProductList(category){
         let filterCategory;
@@ -237,8 +307,10 @@ document.addEventListener('DOMContentLoaded', function() {
             ulElement.innerHTML += `<li>${key}: ${value}</li>`;
         })
         divCard.append(ulElement);
-        divCard.innerHTML += `<button type="button" class="buy-button"> Купить ${card.price} Грн </button>`;
-        divCard.innerHTML += `<span class ='buy-product-messeage'>Вы успешно купили товар</span>`;
+        divCard.innerHTML += 
+                    `<button type="button" class="buy-button"> Купить ${card.price} Грн </button>
+                    <h3 class="order-inform-price hidden">Вы купили на сумму ${card.price} Грн<h3>
+                    <span class ='buy-product-messeage'>Вы успешно купили товар</span>`;
         productsTitle.append(divCard);
         divCard.addEventListener('click', function(event) {
             let target = event.target;
@@ -247,6 +319,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 setProductInStorage(card);
                 let buyMessege = document.querySelector(".buy-product-messeage");
                 buyMessege.classList.add("visible");
+                popUpBlock.id = card.id;
+                popUpBuyOverlay.classList.remove('hidden');
+                popUpBuyBlock.classList.remove('hidden');
                 setTimeout(() => {
                     productsTitle.removeChild(divCard);
                     const productCards = document.querySelectorAll(".product-cards");
@@ -254,6 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         element.parentNode.removeChild(element);
                     });
                 },1400)
+                
             }
         },true);
     }
@@ -314,4 +390,390 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.removeItem(deleteBlock.id);
         productsBasketPop.removeChild(deleteBlock);
     }
+
+
+
+
+
+    //Новый код 
+    cityInput.addEventListener('keyup', function(event) {
+        const target = event.target;
+        target.setAttribute('autocomplete', 'off');
+        const cityName = target.value.trim();
+    
+        if(isNumber(cityName)){
+            return
+        }else if (loading) {
+            return;
+        }
+        inputElements.addressPostInput.disabled = true;
+        inputElements.addressPostInput.value = '';
+        inputElements.cityInput.dataset.cityId = '';
+        inputElements.addressPostInput.dataset.deliveryPostId = '';
+        
+        fetchAddresses(cityName, "cityName")
+            .then(data => {
+                renderFormAdressList(addressList,data);
+            })
+            .catch(error => console.error("не удалось получить список городов"))
+            .finally(() => {
+                loading = false;
+                if(isEmptyOrWhitespace(cityName)){
+                    addressList.classList.add("hidden");
+                    target.setAttribute('autocomplete', 'on'); 
+                } 
+                else addressList.classList.remove('hidden');
+                
+            });
+    });
+    
+    addressList.addEventListener('click', function(event) {
+        const target = event.target;
+        if (target.matches('li.addressList-item')) {
+            addressPostInput.disabled = false;
+            target.setAttribute('autocomplete', 'off');
+            inputElements.cityInput.value = target.textContent;
+            inputElements.cityInput.dataset.cityId = target.id;
+            addressList.classList.add("hidden");
+            const cityRef = target.id;
+            fetchAddresses(cityRef,"cityRef")
+                .then(data => {
+                    renderFormAdressList(deliveryAdressList,data);
+                })
+                .catch(error => console.error("не удалось получить список отделений"))
+        }
+         else{
+            addressList.classList.add("hidden");
+        }
+    });
+    
+    popUpBlock.addEventListener('click', (event) => {
+        event.stopPropagation();
+        addressFormList.forEach(element => {
+            if (!element.classList.contains("hidden")) {
+                element.classList.add('hidden');
+            }
+        });
+    });
+    
+    formBuyProduct.addEventListener('submit', (event) => {
+        event.preventDefault();
+        let formValue = getFormValueForValid();
+        formValue = addTrimToDescription(formValue);
+        let validStatusForm = validateFormInput(formValue);
+        if (!validStatusForm) {
+            renderFormError(formValue, inputElements);
+        } else {
+            renderOrderBlockCard(formValue);
+            cleanerBuyForm();
+    
+            const filteredFormValue = {};
+            for (const key in formValue) {
+                filteredFormValue[key] = {
+                    title: formValue[key].title,
+                    description: formValue[key].description
+                };
+            }
+            const submit = new Promise((resolve, reject) => {
+                fetch('https://devolt.free.beeceptor.com/', {
+                    method: 'POST',
+                    body: JSON.stringify(filteredFormValue),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        if (contentType && contentType.includes('application/json')) {
+                            return response.json();
+                        } else {
+                            return response.text();
+                        }
+                    } else {
+                        throw new Error('Шеф все пропало');
+                    }
+                })
+                .then(data => {
+                    resolve(data);
+                    console.log("Печеньки успешно ушли на темную сторону!");
+                })
+                .catch(error => {
+                    reject(error);
+                });
+            });
+            
+            submit.then(data => console.log(data)).catch(error => {
+                console.error(error.message);
+            });
+            popUpBuyOverlay.classList.add('hidden');
+            popUpBuyBlock.classList.add('hidden');
+        }
+       
+    });
+    
+    addressPostInput.addEventListener('input', function(event) {
+      const target = event.target;
+      const postContent = target.value.trim().toLowerCase();
+      target.setAttribute('autocomplete', 'off');
+      if(isEmptyOrWhitespace(postContent) && deliveryAdressList.classList.contains('hidden')){
+          target.setAttribute('autocomplete', 'on'); 
+      } 
+      addressPostInput.dataset.deliveryPostId = '';
+      deliveryAdressList.classList.remove('hidden');
+      addressPostList.querySelectorAll('li.addressPost-item').forEach(item => {
+          const itemText = item.textContent.trim().toLowerCase();
+          if (itemText.includes(postContent)) {
+              item.classList.remove("hidden");
+          } else {
+              item.classList.add("hidden");
+          }
+      });
+    });
+    
+    deliveryAdressList.addEventListener('click',function(event) {
+      const target = event.target;
+      deliveryAdressList.classList.add("hidden");
+      if (target.matches('li.addressPost-item')) {
+          addressPostInput.value = target.textContent;
+          addressPostInput.dataset.deliveryPostId = target.id;
+      } 
+    })
+    
+    inputElements.commentsTextarea.addEventListener('input', () => {
+        autoGrow(inputElements.commentsTextarea);
+    });
+    
+    btnCloseFormBuy.addEventListener('click',() =>{
+        cleanerBuyForm();
+        popUpBuyOverlay.classList.add('hidden');
+        popUpBuyBlock.classList.add('hidden');
+    })
+    
+    
+    function cleanerBuyForm() {
+        const inputElements = formBuyProduct.querySelectorAll('input, textarea');
+        const errorDivs = formBuyProduct.querySelectorAll('.error-form-block');
+        const radioButtons = formBuyProduct.querySelectorAll('input[type="radio"]');
+
+        popUpBlock.id = '';
+
+        inputElements.forEach(element => {
+            element.classList.remove('invalid');
+            element.value = '';
+            if (element.id === 'cityInput') {
+                element.setAttribute('data-city-id', ''); 
+            }
+            if (element.id === 'addressPostInput'){
+                element.setAttribute('data-delivery-post-id', '');
+            }
+        });
+    
+        errorDivs.forEach(div => {
+            div.remove();
+        });
+        
+        radioButtons.forEach(radio => {
+            radio.checked = false;
+        });
+    }
+    
+    function cleanerOrderBlock() {
+        productsTitle.innerHTML = ''
+        productsTitle.classList.remove('order')
+    }
+
+    function autoGrow(element) {
+      element.style.height = "auto";
+      element.style.height = (element.scrollHeight) + "px";
+    }
+    
+    function getFormValueForValid() {
+        let currentValiditionForm = JSON.parse(JSON.stringify(validitionForm));
+        const prodQuantityInputValue = inputElements.prodQuantityInput.value;
+        const quantityValue = prodQuantityInputValue.split(".");
+        const protectCityInputValue = protectFromXSS(inputElements.cityInput.value); 
+        const protectPostInputValue = protectFromXSS(inputElements.addressPostInput.value);            
+        const protectCommentValue = protectFromXSS(inputElements.commentsTextarea.value);
+    
+        currentValiditionForm.nameInput.description = removeExtraSpaces(inputElements.nameInput.value);
+        currentValiditionForm.cityInput.description = protectCityInputValue;
+        currentValiditionForm.cityInput.cityId = inputElements.cityInput.dataset.cityId;
+        currentValiditionForm.addressPostInput.description = protectPostInputValue;
+        currentValiditionForm.addressPostInput.deliveryPostId = inputElements.addressPostInput.dataset.deliveryPostId;
+        currentValiditionForm.paid.description = postPaidRadio.checked ? labelAllPaidForm[0].textContent : onlinePaidRadio.checked ? labelAllPaidForm[1].textContent : '';
+        currentValiditionForm.prodQuantityInput.description = quantityValue[0];
+        currentValiditionForm.commentsTextarea.description = protectCommentValue;
+        return currentValiditionForm;
+    }
+    
+    const validateFormInput = (currentValidationForm) => {
+        const { nameInput, cityInput, addressPostInput, paid, prodQuantityInput, commentsTextarea } = currentValidationForm;
+    
+        const isValidName = !isEmptyOrWhitespace(nameInput.description) && !hasSpecialCharacters(nameInput.description, currentValidationForm) && hasSpaceBetweenCharacters(nameInput.description);
+        const isValidCity = !isEmptyOrWhitespace(cityInput.description) && !isEmptyOrWhitespace(cityInput.cityId);
+        const isValidAddress = !isEmptyOrWhitespace(addressPostInput.description) && !isEmptyOrWhitespace(addressPostInput.deliveryPostId);
+        const isValidPaid = !isEmptyOrWhitespace(paid.description);
+        const isValidProdQuantity = !isEmptyOrWhitespace(prodQuantityInput.description) && isPositiveInteger(prodQuantityInput.description);
+        const isValidComments = !isEmptyOrWhitespace(commentsTextarea.description) && !hasOnlyEnterCharacters(commentsTextarea.description);
+    
+        nameInput.valid = isValidName;
+        cityInput.valid = isValidCity;
+        addressPostInput.valid = isValidAddress;
+        paid.valid = isValidPaid;
+        prodQuantityInput.valid = isValidProdQuantity;
+        commentsTextarea.valid = isValidComments;
+    
+        const validations = Object.values(currentValidationForm);
+        const isAllValid = validations.every(element => element.valid);
+        return isAllValid;
+    };
+    
+    function fetchAddresses(value,type) {
+        const fetchParametrs = {
+           "cityName" : {
+            apiKey: API,
+            modelName: 'Address',
+            calledMethod: 'searchSettlements',
+            methodProperties: {
+                CityName: value,
+                Limit: '50',
+                Page: '1'
+                }
+            },
+            "cityRef" : {
+                apiKey: API,
+                modelName: 'Address',
+                calledMethod: "getWarehouses",
+                methodProperties: {
+                    FindByString : "",
+                    CityName : "",
+                    CityRef : value,
+                    Limit: '10000',
+                    Language: 'UA',
+                    Page: '1'
+                }
+            }
+        }
+        return new Promise((resolve, reject) => {
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify(
+                    fetchParametrs[type]
+                )
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Cервер ушел за печенькой');
+                }
+                return response.json();
+            })
+            .then(data => {
+                resolve(data);
+            })
+            .catch(error => {
+                alert('Не удалось получить данные');
+            });
+        });
+    }
+    
+    function renderFormAdressList(container,data){
+                container.innerHTML = '';
+                let addresses;
+                let parametrs;
+                if(container.id === "addressPostList"){
+                    addresses = data.data;
+                    parametrs = ["addressPost-item","Number","Description"];
+                    
+                } else if (container.id === "addressList") {
+                    addresses = data.data[0].Addresses;
+                    parametrs = ["addressList-item","DeliveryCity","Present"];
+                }
+                addresses.forEach(address => {
+                    container.innerHTML += `<li class=${parametrs[0]} id='${address[parametrs[1]]}'>${address[parametrs[2]]}</li>`;
+                });
+    }
+    
+    
+    function renderFormError(formValue,inputElements){
+    
+        for (const key in formValue) {
+            const errorElement = inputElements[key].nextElementSibling;
+            if(!formValue[key].valid){
+                const errorBlock = `<div class="error-form-block">${formValue[key].invalidMessage}</div>`;
+                inputElements[key].classList.add('invalid');
+                if (!errorElement.classList.contains('error-form-block')) {
+                    inputElements[key].insertAdjacentHTML('afterend', errorBlock);
+                }
+            }else{
+                if (errorElement.classList.contains('error-form-block')) {
+                    errorElement.remove();
+                }
+                inputElements[key].classList.remove('invalid');
+            }
+        }
+    }
+    
+    function renderOrderBlockCard(formValue){
+        let content = `<h3>Данные Заказа</h3>`;
+        for (const key in formValue) {
+            content += `<div><p>${formValue[key].title} :</p><span>${formValue[key].description}</span></div>`;
+        }
+        
+        productsTitle.innerHTML = `<div class="order-form-block">${content}</div>`;
+        const product = products.find(item => item.id === +popUpBlock.id);
+        getProductCard(product)
+        const buyBtn = document.querySelector(".buy-button");
+        const orderPrice = document.querySelector('.order-inform-price');
+        buyBtn.classList.add("hidden");
+        orderPrice.classList.remove("hidden");
+        productsTitle.classList.add("order");
+    }
+    
+    function protectFromXSS(input) { 
+        let sanitizedInput = input.replace(/&/g,"&amp;");
+        sanitizedInput = sanitizedInput.replace(/>/g, "&gt;");
+        sanitizedInput = sanitizedInput.replace(/</g, "&lt;");
+        return sanitizedInput;
+    }
+    
+    function addTrimToDescription(formValue) {
+        for (const key in formValue) {
+            if ('description' in formValue[key]) {
+                formValue[key].description = formValue[key].description.trim();
+            }
+        }
+        return formValue;
+    }
+    
+    function hasOnlyEnterCharacters(str) {
+        str.replace(/\n/g, "").trim(); 
+        return  str.length === 0;
+    }
+    
+    function hasSpecialCharacters(input,currentValiditionForm) {
+        if (input === currentValiditionForm.nameInput.description) {
+            const regex = /[!@#$%^&*()_+=\[\]{};:"\\|,.<>\/?~0-9]/;
+            return regex.test(input);
+        }
+    }
+    
+    function hasSpaceBetweenCharacters(input) {
+        return /.\s.|\s.\s/.test(input);
+    }
+    
+    function removeExtraSpaces(input) {
+        return input.replace(/\s+/g, ' ');
+    }
+    
+    function isNumber(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+    }
+    
+    function isPositiveInteger(value) {
+        return Number.isInteger(+value) && +value > 0;
+    }
+    
+    function isEmptyOrWhitespace(input) {
+        return input.trim() === '';
+    }
+
+
 });
