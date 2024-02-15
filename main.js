@@ -75,7 +75,6 @@ function getVersionBrowser(userAgent,foundEntry){
 }
 
 function rendImgBrowser(foundEntry){
-    console.log(foundEntry[1].urlImg);
     imgBlock.innerHTML=`<img class="img-browser" src="${foundEntry[1].urlImg}">`   
 }
 
