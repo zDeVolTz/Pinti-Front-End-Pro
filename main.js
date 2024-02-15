@@ -506,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
             popUpBuyOverlay.classList.add('hidden');
             popUpBuyBlock.classList.add('hidden');
         }
-       
+
     });
     
     addressPostInput.addEventListener('input', function(event) {
