@@ -3,26 +3,3 @@ body {
   padding: 40px;
   background: lightgray;
 }
-.titleBrowser {
-  width: 100%;
-  font-size: 40px;
-  text-align: center;
-}
-.verBrowser {
-  width: 100%;
-  text-align: center;
-}
-.img-browser{
-  width: 400px;
-  height: 600px;
-}
-.image-browser-block{
-  position: absolute;
-  right: 50px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-li {
-  list-style: none;
-  font-size: 30px;
-}
