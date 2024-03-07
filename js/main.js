@@ -1,26 +1,155 @@
+const swiperBlocks = document.querySelectorAll(".swiper");
 
-const textBlock = document.querySelector(".block-word");
-const banWords =["підманула","підвела","понеділок", "вівторок", "середу", "четвер", "п’ятницю", "суботу", "неділю"];
+const imgsSwiper = ['../img/img-card/1.jpg','../img/img-card/2.jpg','../img/img-card/3.jpg','../img/img-card/4.jpg','../img/img-card/5.jpg','../img/img-card/6.jpg']
 
-banOnBadWords();
+const paramSlider = {
+    isAnimating : false,
+    animationTime : 1000,
+    infinityRight : false,
+    infinity : false, 
+    standart : false,
+}
+
+swiperBlocks.forEach(element => {
+
+    if(!checkImgsArr()) return;
+
+    let options = {...paramSlider};
+
+    if(element.classList.contains("swiper--infinity-right")){
+        options.infinityRight = true;
+    } else if (element.classList.contains("swiper--infinity")){
+        options.infinity = true;
+    } else {
+        options.standart = true;
+    }
+
+    renderSwiper(element);
+    checkSwiperOption(element,options);  
+    swipe(element,options);
+
+})
 
 
-function banOnBadWords() {
-let text = textBlock.innerHTML
-const regex = new RegExp(banWords.join("|"), "gi");
+function renderSwiper(element) {
 
-let result = text.replaceAll(regex,function(badWord){
-    return '*'.repeat(badWord.length);
-});
+    let swiperBlocksHTML = '';
+    imgsSwiper.forEach((img, index) => {
+        swiperBlocksHTML += `<div class="${index === 0  ? 'swiper__card active' : 'swiper__card'}" data-id="${index + 1}" style="background: url('${img}') center no-repeat; background-size: cover; background-clip: content-box"></div>`;
+    });
+      
+    element.innerHTML = 
+        `<div class="swiper__block">
+            ${swiperBlocksHTML}
+        </div>
+        <div class="swiper__btn-block">
+            <button class="swiper__prev-btn hidden"></button>
+            <button class="swiper__next-btn hidden"></button>
+        </div>
+        `;
 
-// мій альтернавний метод код працє так само може краще ?
+}
 
-// let result = text;
-// let badWord;
-// while((badWord = regex.exec(text)) !== null){
-//     let changeWord = '*'.repeat(badWord[0].length)
-//     result = result.split(badWord).join(changeWord);
-// }
+function checkSwiperOption(element,options) {
 
-textBlock.innerHTML = result;
-};
+    if (imgsSwiper.length > 1) {
+        const nextBtn = element.querySelector(".swiper__next-btn.hidden");
+        nextBtn.classList.remove('hidden');
+    }
+    
+    if(options.infinity && imgsSwiper.length > 1) {
+        const prevBtn = element.querySelector(".swiper__prev-btn.hidden");
+        prevBtn.classList.remove('hidden');
+    }
+
+}
+
+function swipe(element,options) {
+
+    const swiperImgs = element.querySelector(".swiper__block");
+    const buttons = {
+        prevBtn: element.querySelector(".swiper__prev-btn"),
+        nextBtn: element.querySelector(".swiper__next-btn")
+    };
+
+   buttons.nextBtn.addEventListener("click", (event) => {
+    target = event.target;
+    swipeBtn(target,buttons,swiperImgs,options);
+   });
+
+   buttons.prevBtn.addEventListener("click", (event) => {
+    target = event.target;
+    swipeBtn(target,buttons,swiperImgs,options);
+   });
+
+}
+
+
+function swipeBtn(target, buttons, swiperImgs, options) {
+    if (options.isAnimating) return; 
+    
+    
+    const activeImg = swiperImgs.querySelector(".swiper__card.active");
+    let index;
+
+    if (target.classList.contains("swiper__next-btn")) {
+        index = parseInt(activeImg.dataset.id) + 1;
+        if ((options.infinityRight || options.infinity) && index > imgsSwiper.length) {
+            index = 1; 
+        }
+    } else if (target.classList.contains("swiper__prev-btn")) {
+        index = parseInt(activeImg.dataset.id) - 1;
+        if (options.infinity && index - 1 < 0) {
+            index = imgsSwiper.length; 
+        }
+    }
+
+    let targetImg = swiperImgs.querySelector(`.swiper__card[data-id="${index}"]`);
+    
+    if (targetImg) {
+
+        options.isAnimating = true; 
+
+        if(options.standart){
+            if (index > imgsSwiper.length - 1) {
+               buttons.nextBtn.classList.add("hidden");
+           } else {
+               buttons.nextBtn.classList.remove("hidden");
+           }
+        }
+
+        if(options.standart || options.infinityRight){
+            if (index - 1 === 0) {
+                buttons.prevBtn.classList.add("hidden");
+            } else {
+                buttons.prevBtn.classList.remove("hidden");
+            }
+        }
+
+        targetImg.classList.add("active");
+        activeImg.classList.remove("active");
+
+        if (target.classList.contains("swiper__next-btn")) {
+            targetImg.classList.add("left-animation");
+            activeImg.classList.add("left-animation");
+        } else {
+            targetImg.classList.add("right-animation");
+            activeImg.classList.add("right-animation");
+        }
+        
+        setTimeout(() => {
+            options.isAnimating = false;
+            activeImg.classList.remove("left-animation", "right-animation");
+            targetImg.classList.remove("left-animation", "right-animation");
+        }, options.animationTime);
+
+    }
+
+}
+
+function checkImgsArr() {
+    return Array.isArray(imgsSwiper) && imgsSwiper.length  > 0;
+}
+
+
+
