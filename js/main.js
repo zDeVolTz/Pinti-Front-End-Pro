@@ -5,7 +5,10 @@ const inputBtn = document.querySelector('.url-block__input-btn');
 inputBtn.addEventListener('click',() => {
 
     const newValidUrl = createValidUrlHref(inputUrl.value.trim());
-    console.log(newValidUrl);
+    if(newValidUrl) {
+        console.log(newValidUrl);
+    }
+    
 })
 
 function createValidUrlHref(string) {
