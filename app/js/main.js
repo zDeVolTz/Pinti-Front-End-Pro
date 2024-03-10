@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             id : 36800,
-            imgUrl: 'https://content2.rozetka.com.ua/goods/images/big/398085804.jpg',
+            imgUrl: './img/samsung-s24.jpg',
             name: 'Мобильный телефон Samsung Galaxy S24 Ultra',
             desck: {
                 "Диагональ дисплея": "6.8, Dynamic AMOLED 2X",
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 
         {
             id : 36801,
-            imgUrl: 'https://content1.rozetka.com.ua/goods/images/big/364834195.jpg',
+            imgUrl: './img/iphone.jpg',
             name: 'Мобильный телефон Apple iPhone 15 Pro Max',
             desck: {
                 "Диагональ дисплея": "6.7, OLED (Super Retina XDR)",
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             id : 36802,
-            imgUrl: 'https://content2.rozetka.com.ua/goods/images/big/366846770.jpg',
+            imgUrl: './img/moto.jpg',
             name: 'Мобильный телефон Motorola G54 Power',
             desck: {
                 "Диагональ дисплея": "6.5, IPS",
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             id : 36803,
-            imgUrl: 'https://content.rozetka.com.ua/goods/images/big/328132324.jpg',
+            imgUrl: './img/samsung-a24.jpg',
             name: 'Мобильный телефон Samsung Galaxy A24',
             desck: {
                 "Диагональ дисплея": "6.5, Super AMOLED",
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const productsBasket = document.querySelector(".products-basket-block");
     const productsBasketPop = document.querySelector(".products-basket-popup");
     const overlayPop = document.querySelector(".overlay");
-
+    const productsBasketBtn = document.querySelector(".products-basket-btn");
     // Новый код
     const API = "9f543c3fa0e4f5382f0e14d717d6fa58";
     const url = "https://api.novaposhta.ua/v2.0/json/";
@@ -241,31 +241,58 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             getProductList(target);
         }
-    },true);
-    
-    productsBasket.addEventListener('click',function(event){
-        let target = event.target;
-        event.stopPropagation();
-        if (target.classList.contains("products-basket-btn")){
-            if(productsTitle.querySelector('.order-form-block')){
-                cleanerOrderBlock();
-            }
-            renderProductsBusket();
-        } else if (target.classList.contains("product-bsk-delete")){
-            deleteFromBusket(target);
-        } else if (target.classList.contains("product-bsk--close-pop")){
-            productsBasketPop.classList.add('hidden');
-            overlayPop.classList.add('hidden');
-        } else if (target.classList.contains("product-bsk--block") || target.closest('.product-bsk--block')){
-            target = target.closest('.product-bsk--block');
-            productsBasketPop.classList.add('hidden');
-            overlayPop.classList.add('hidden');
-            let productEntry  = JSON.parse(localStorage.getItem(target.id));
-            const product = products.find(item => item.id === productEntry.id);
-            getProductCard(product);
-        }
     });
     
+    productsBasketBtn.addEventListener('click', () => {
+        if(productsTitle.querySelector('.order-form-block')){
+            cleanerOrderBlock();
+        }
+        renderProductsBusket();
+
+        const productBskCloseBtn = document.querySelector(".product-bsk--close-pop");
+        const productsBskDelete = document.querySelectorAll(".product-bsk-delete");
+        const productsBskBlock = document.querySelectorAll(".product-bsk--block");
+        const productsBskBlockInfo = document.querySelectorAll(".product-bsk--block-info");
+
+        productBskCloseBtn.addEventListener('click' , () => {
+            productsBasketPop.classList.add('hidden');
+            overlayPop.classList.add('hidden');
+        })
+
+        productsBskDelete.forEach(element => {
+            element.addEventListener("click",function(event){
+                event.stopPropagation();
+                target = event.target;
+                deleteFromBusket(target);
+            })
+        })
+
+        productsBskBlock.forEach(element => {
+            element.addEventListener("click", handleProductsBskBlockClick);
+        });
+        
+        productsBskBlockInfo.forEach(element => {
+            element.addEventListener("click", function(event) {
+                event.stopPropagation();
+                handleProductsBskBlockClick(event);
+            });
+        });
+
+    })
+
+   
+    function handleProductsBskBlockClick(event) {
+        let target = event.target.closest('.product-bsk--block');
+        if (!target) return; 
+    
+        productsBasketPop.classList.add('hidden');
+        overlayPop.classList.add('hidden');
+        let productEntry = JSON.parse(localStorage.getItem(target.id));
+        const product = products.find(item => item.id === productEntry.id);
+        getProductCard(product);
+    }
+    
+
     function getProductList(category){
         let filterCategory;
         const productCards = document.querySelectorAll(".product-cards");
