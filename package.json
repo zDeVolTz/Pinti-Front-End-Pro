@@ -29,9 +29,7 @@
     "gulp-prompt": "^1.2.0",
     "gulp-sass": "^5.1.0",
     "gulp-terser": "^2.1.0",
-    "gulp-uglify": "^3.0.2",
     "imagemin-pngquant": "^9.0.2",
-    "imagemin-webp": "^8.0.0",
     "postcss": "^8.4.31",
     "sass": "^1.68.0"
   },

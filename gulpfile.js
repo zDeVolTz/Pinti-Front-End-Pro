@@ -42,6 +42,7 @@ gulp.task('del', () => {
 
 gulp.task('js', () => {
     return gulp.src('app/js/**/*.js')
+        .pipe(obfuscate())
         .pipe(terser())
         .pipe(gulp.dest('dist/js'))
 });
