@@ -1,4 +1,5 @@
 import {deleteAsync} from 'del';
+import { execSync } from 'child_process';
 import gulp from 'gulp';
 import * as dartSass from 'sass';
 import gulpSass from 'gulp-sass';
@@ -105,8 +106,10 @@ gulp.task("commit", () => {
     }));
 })
 
+
 gulp.task("push", async (done) => {
-    await gulpGit.push(null, null, function(err) {
+    const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+    await gulpGit.push('origin', branch, function(err) {
         if (err) {
             done(err);
         } else {
