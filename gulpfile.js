@@ -109,7 +109,7 @@ gulp.task("commit", () => {
 
 gulp.task("push", async (done) => {
     const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
-    await gulpGit.push('origin', branch, function(err) {
+    await gulpGit.push('origin', '44', function(err) {
         if (err) {
             done(err);
         } else {
